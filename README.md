@@ -27,7 +27,7 @@ This is a custom terraform provider for managing Android devices within the Geny
     $ mv terraform-provider-genymotion $HOME/.terraform.d/plugins/terraform-provider-genymotion
     ```
 
-1. After placing it into your plugins directory, run terraform init to initialize it.
+1. After placing it into your plugins directory, run `terraform init` to initialize it.
 
   This will find the plugin locally.
 
@@ -70,7 +70,7 @@ provider "genymotion' {}
 ```
 
 
-### Resources Providers ###
+## Resources Providers ##
 
 ### Example - One device ###
 
