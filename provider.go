@@ -42,39 +42,30 @@ func Provider() *schema.Provider {
 
 func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 
+	var err error
+
 	config := GenymotionConfig{
 		Email:      d.Get("email").(string),
 		Password:   d.Get("password").(string),
 		LicenseKey: d.Get("license_key").(string),
 	}
 
+	// Check mandatory fields
 	if err := config.validate(); err != nil {
 		return nil, err
 	}
 
-	// Register Genymotion Account
-	log.Println("[INFO] Register Genymotion Account")
-	cmd_login := exec.Command(
-		"gmtool", "config", "username", config.Email, "password", config.Password)
-	output, err_login := cmd_login.CombinedOutput()
-	if err_login != nil {
-		return fmt.Errorf("Error: %s", output), nil
-	} else {
-		fmt.Println(string(output))
+	// Connect to Genymotion account
+	if err := config.connect(); err != nil {
+		return nil, err
 	}
 
-	// Register Genymotion License key
-	log.Println("[INFO] Register Genymotion License key")
-	cmd_register := exec.Command(
-		"gmtool", "license", "register", config.LicenseKey)
-	output, err_register := cmd_register.CombinedOutput()
-	if err_register != nil {
-		return fmt.Errorf("Error: %s", output), nil
-	} else {
-		fmt.Println(string(output))
+	// Register Genymotion license key
+	if err := config.register_license(); err != nil {
+		return nil, err
 	}
 
-	return nil, err_login
+	return nil, err
 }
 
 func (c GenymotionConfig) validate() error {
@@ -91,6 +82,36 @@ func (c GenymotionConfig) validate() error {
 	}
 
 	return err.ErrorOrNil()
+}
+
+func (c GenymotionConfig) connect() error {
+	// Register Genymotion Account
+	log.Println("[INFO] Register Genymotion Account")
+	cmd := exec.Command(
+		"gmtool", "config", "username", c.Email, "password", c.Password)
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("Error: %s", output)
+	} else {
+		fmt.Println(string(output))
+	}
+
+	return nil
+}
+
+func (c GenymotionConfig) register_license() error {
+	// Register Genymotion License key
+	log.Println("[INFO] Register Genymotion License key")
+	cmd := exec.Command(
+		"gmtool", "license", "register", c.LicenseKey)
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("Error: %s", output)
+	} else {
+		fmt.Println(string(output))
+	}
+
+	return nil
 }
 
 type GenymotionConfig struct {
