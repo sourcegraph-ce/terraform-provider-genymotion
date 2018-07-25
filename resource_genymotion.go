@@ -3,10 +3,11 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"github.com/hashicorp/terraform/helper/schema"
 	"os"
 	"os/exec"
 	"strings"
+
+	"github.com/hashicorp/terraform/helper/schema"
 )
 
 func resourceGenymotion() *schema.Resource {
@@ -63,19 +64,19 @@ func resourceGenymotionRead(d *schema.ResourceData, m interface{}) error {
 	name := d.Get("name").(string)
 
 	// Retrieve genymotion Cloud device informations
-	admin_list := exec.Command("gmtool", "--cloud", "admin", "list")
-	stdout, err := admin_list.StdoutPipe()
+	adminList := exec.Command("gmtool", "--cloud", "admin", "list")
+	stdout, err := adminList.StdoutPipe()
 	if err != nil {
 		return nil
 	}
-	admin_list.Start()
+	adminList.Start()
 	scanner := bufio.NewScanner(stdout)
 	for scanner.Scan() {
 		line := scanner.Text()
 		s := strings.Split(line, "|")
 		if len(s) >= 4 {
-			actual_name := strings.Trim(s[3], " ")
-			if strings.EqualFold(actual_name, name) {
+			actualName := strings.Trim(s[3], " ")
+			if strings.EqualFold(actualName, name) {
 				uuid := strings.Trim(s[2], " ")
 				d.Set("uuid", uuid)
 
