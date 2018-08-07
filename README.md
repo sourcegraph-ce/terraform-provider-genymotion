@@ -54,7 +54,7 @@ The following arguments are supported.
 
 ### Example ###
 
-The following example shows you how to configure a LX branded zone running Ubuntu.
+The following example shows you how to configure Genymotion Cloud provider.
 
 ```hcl
 provider "genymotion" {
@@ -150,4 +150,13 @@ $ terraform version
 Terraform v0.17.0
 
 $ terraform init --plugin-dir=$GOPATH/bin
+```
+
+## Test the provider
+
+```sh
+$ export GENYMOTION_EMAIL={GENYMOTION_ACCOUNT}
+$ export GENYMOTION_PASSWORD={GENYMOTION_PASSWORD}
+$ export GENYMOTION_LICENSE_KEY={GENYMOTION_LICENSE_KEY}
+$ TF_ACC=1 go test -v -timeout 120m
 ```
