@@ -59,14 +59,14 @@ func testCheckGenymotionCloudInstanceExists(resourceName string, name string, te
 			)
 		}
 
-		actualUUID := fmt.Sprint(outputs["uuid"].Value)
-		if !isValidUUID(actualUUID) {
-			return fmt.Errorf("`uuid` output is not a correct UUID: %s", actualUUID)
+		// check uuid is not empty
+		if fmt.Sprint(outputs["uuid"].Value) == "" {
+			return fmt.Errorf("`uuid` output is empty")
 		}
 
-		actualADBSerial := fmt.Sprint(outputs["adbserial"].Value)
-		if !isValidADBSerial(actualADBSerial) {
-			return fmt.Errorf("`adb serial` output is not a correct adb serial port: %s", actualADBSerial)
+		// check adb serial is not empty
+		if fmt.Sprint(outputs["adbserial"].Value) == "" {
+			return fmt.Errorf("`adbserial` output is empty")
 		}
 
 		return nil
@@ -106,14 +106,4 @@ func testCheckGenymotionCloudDestroy(state *terraform.State) error {
 	}
 
 	return nil
-}
-
-func isValidUUID(uuid string) bool {
-	r := regexp.MustCompile("^[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$")
-	return r.MatchString(uuid)
-}
-
-func isValidADBSerial(adbserial string) bool {
-	r := regexp.MustCompile("^localhost:[0-9]{5}$")
-	return r.MatchString(adbserial)
 }
