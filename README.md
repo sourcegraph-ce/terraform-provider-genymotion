@@ -154,9 +154,20 @@ $ terraform init --plugin-dir=$GOPATH/bin
 
 ## Test the provider
 
+Run acceptance tests
 ```sh
 $ export GENYMOTION_EMAIL={GENYMOTION_ACCOUNT}
 $ export GENYMOTION_PASSWORD={GENYMOTION_PASSWORD}
 $ export GENYMOTION_LICENSE_KEY={GENYMOTION_LICENSE_KEY}
-$ TF_ACC=1 go test -v -timeout 120m
+$ make testacc
+```
+
+or 
+
+Build and test 
+```sh
+$ export GENYMOTION_EMAIL={GENYMOTION_ACCOUNT}
+$ export GENYMOTION_PASSWORD={GENYMOTION_PASSWORD}
+$ export GENYMOTION_LICENSE_KEY={GENYMOTION_LICENSE_KEY}
+$ make
 ```
