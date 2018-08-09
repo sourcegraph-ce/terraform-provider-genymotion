@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/hashicorp/go-multierror"
-	"github.com/hashicorp/terraform/helper/schema"
 	"log"
 	"os/exec"
+
+	"github.com/hashicorp/go-multierror"
+	"github.com/hashicorp/terraform/helper/schema"
 )
 
 func Provider() *schema.Provider {
@@ -61,7 +62,7 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	}
 
 	// Register Genymotion license key
-	if err := config.register_license(); err != nil {
+	if err := config.registerLicense(); err != nil {
 		return nil, err
 	}
 
@@ -99,7 +100,7 @@ func (c GenymotionConfig) connect() error {
 	return nil
 }
 
-func (c GenymotionConfig) register_license() error {
+func (c GenymotionConfig) registerLicense() error {
 	// Register Genymotion License key
 	log.Println("[INFO] Register Genymotion License key")
 	cmd := exec.Command(
