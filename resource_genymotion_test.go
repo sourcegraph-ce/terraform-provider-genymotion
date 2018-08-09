@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform/helper/acctest"
