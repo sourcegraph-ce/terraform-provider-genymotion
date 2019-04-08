@@ -40,8 +40,8 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	var err error
 
 	config := GenymotionConfig{
-		Email:      d.Get("email").(string),
-		Password:   d.Get("password").(string)
+		Email:    d.Get("email").(string),
+		Password: d.Get("password").(string),
 	}
 
 	// Check mandatory fields
@@ -74,7 +74,7 @@ func (c GenymotionConfig) connect() error {
 	// Register Genymotion Account
 	log.Println("[INFO] Register Genymotion Account")
 	cmd := exec.Command(
-		"gmtool", "config", "username", c.Email, "password", c.Password)
+		"gmsaas", "auth", "login", c.Email, c.Password)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("Error: %s", output)
@@ -86,6 +86,6 @@ func (c GenymotionConfig) connect() error {
 }
 
 type GenymotionConfig struct {
-	Email      string
-	Password   string
+	Email    string
+	Password string
 }
