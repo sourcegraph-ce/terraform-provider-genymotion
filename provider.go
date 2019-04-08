@@ -25,12 +25,6 @@ func Provider() *schema.Provider {
 				DefaultFunc: schema.EnvDefaultFunc("GENYMOTION_PASSWORD", nil),
 				Description: "Password for the Genymotion Cloud account",
 			},
-			"license_key": &schema.Schema{
-				Type:        schema.TypeString,
-				Required:    true,
-				DefaultFunc: schema.EnvDefaultFunc("GENYMOTION_LICENSE_KEY", nil),
-				Description: "License key for the Genymotion Cloud account",
-			},
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
@@ -47,8 +41,7 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 
 	config := GenymotionConfig{
 		Email:      d.Get("email").(string),
-		Password:   d.Get("password").(string),
-		LicenseKey: d.Get("license_key").(string),
+		Password:   d.Get("password").(string)
 	}
 
 	// Check mandatory fields
@@ -58,11 +51,6 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 
 	// Connect to Genymotion account
 	if err := config.connect(); err != nil {
-		return nil, err
-	}
-
-	// Register Genymotion license key
-	if err := config.registerLicense(); err != nil {
 		return nil, err
 	}
 
@@ -77,9 +65,6 @@ func (c GenymotionConfig) validate() error {
 	}
 	if c.Password == "" {
 		err = multierror.Append(err, fmt.Errorf("Password must be configured for the Genymotion Cloud Provider"))
-	}
-	if c.LicenseKey == "" {
-		err = multierror.Append(err, fmt.Errorf("License key must be configured for the Genymotion Cloud Provider"))
 	}
 
 	return err.ErrorOrNil()
@@ -100,23 +85,7 @@ func (c GenymotionConfig) connect() error {
 	return nil
 }
 
-func (c GenymotionConfig) registerLicense() error {
-	// Register Genymotion License key
-	log.Println("[INFO] Register Genymotion License key")
-	cmd := exec.Command(
-		"gmtool", "license", "register", c.LicenseKey)
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		return fmt.Errorf("Error: %s", output)
-	} else {
-		fmt.Println(string(output))
-	}
-
-	return nil
-}
-
 type GenymotionConfig struct {
 	Email      string
 	Password   string
-	LicenseKey string
 }
