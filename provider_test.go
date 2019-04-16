@@ -35,7 +35,4 @@ func testAccPreCheck(t *testing.T) {
 	if v := os.Getenv("GENYMOTION_PASSWORD"); v == "" {
 		t.Fatal("GENYMOTION_PASSWORD must be set for acceptance tests")
 	}
-	if v := os.Getenv("GENYMOTION_LICENSE_KEY"); v == "" {
-		t.Fatal("GENYMOTION_LICENSE_KEY must be set for acceptance tests")
-	}
 }
