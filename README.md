@@ -10,9 +10,16 @@ This is a custom terraform provider for managing Android devices within the Geny
 
 * [hashicorp/terraform](https://github.com/hashicorp/terraform)
 * [Go](https://golang.org/doc/install) 1.9 (to build the provider plugin)
-* [Genymotion Cloud Account](https://www.genymotion.com/acount/create/)
-* [Genymotion Desktop](https://www.genymotion.com/download/) (**gmtool** binary must be set in the PATH)
-* [Genymotion Cloud License](https://www.genymotion.com/pricing-and-licensing/)
+* [Genymotion Cloud Account](https://cloud.geny.io/)
+* [gmsaas] (**pip install gmsaas**)
+* [Android SDK](https://developer.android.com/studio/index.html#downloads)
+
+
+## gmsaas
+
+You must install gmsaas command line tool using `pip install gmsaas`
+
+You also must to configure android sdk path using `gmsaas config set android-sdk-path <PATH_TO_ANDROID_SDK>`
 
 ## Installation
 
@@ -36,21 +43,20 @@ This is a custom terraform provider for managing Android devices within the Geny
 
 ### Setup ###
 
-The provider takes configuration arguments for setting up your Genymotion account within Terraform. The following example shows you how to explicitly configure the provider using your account information.
+The provider takes configuration arguments for setting up your Genymotion Cloud account within Terraform. The following example shows you how to explicitly configure the provider using your account information.
 
 ```hcl
 provider "genymotion" {
   email = ""
   password  = ""
-  license_key = ""
+
 }
 ```
 
 The following arguments are supported.
 
-- `email` - (Required) This is the email of the Genymotion account. It can also be provided via the `GENYMOTION_EMAIL` environment variable.
-- `password` - (Required) This is the password of the Genymotion account. It can also be provided via the `GENYMOTION_PASSWORD` environment variable.
-- `license_key` - (Required )This is the license key of the Genymotion account. It can also be provided via the `GENYMOTION_LICENSE_KEY` environment variable.
+- `email` - (Required) This is the email of the Genymotion Cloud account. It can also be provided via the `GENYMOTION_EMAIL` environment variable.
+- `password` - (Required) This is the password of the Genymotion Cloud account. It can also be provided via the `GENYMOTION_PASSWORD` environment variable.
 
 ### Example ###
 
@@ -60,11 +66,10 @@ The following example shows you how to configure Genymotion Cloud provider.
 provider "genymotion" {
     email = "name@company.com"
     password = "its@wEsOme"
-    license_key = "1234-1234-5678-5678"
 }  
 ```
 
-If you are using environnement variables, just add the provider : 
+If you use environnement variables, just add the provider : 
 ```hcl
 provider "genymotion' {}
 ```
@@ -82,7 +87,7 @@ provider "genymotion" {}
 
 
 resource "genymotion_cloud" "myAndroid70" {
-    template = "Google Nexus 6 - 7.0.0 - API 24 - 1440x2560"
+    template_uuid = "a0a9c90a-b391-42f4-b77b-ae0561d74bbe"
     name     = "myAndroidDevice70"
 }
 ```
@@ -96,17 +101,17 @@ The following example shows you how to start several devices on Genymotion Cloud
 provider "genymotion" {}
 
 resource "genymotion_cloud" "Android70" {
-  template = "Google Nexus 6 - 7.0.0 - API 24 - 1440x2560"
+  template_uuid = "a0a9c90a-b391-42f4-b77b-ae0561d74bbe"
   name     = "MyAndroid70"
 }
 
 resource "genymotion_cloud" "Android71" {
-  template = "Google Nexus 6 - 7.1.0 - API 25 - 1440x2560"
+  template_uuid = "80a67ae9-430c-4824-a386-befbb19518b9"
   name     = "MyAndroid71"
 }
 
 resource "genymotion_cloud" "Android80" {
-  template = "Google Nexus 6 - 8.0 - API 26 - 1440x2560"
+  template_uuid = "a59951f2-ed13-40f9-80b9-3ddceb3c89f5"
   name     = "MyAndroid80"
 }
 ```
@@ -119,11 +124,47 @@ The following example shows you how to start 3 devices based on the same templat
 # use env vars to configure the provider
 provider "genymotion" {}
 
-resource "genymotion_cloud" "Android70" {
-  template = "Google Nexus 6 - 7.0.0 - API 24 - 1440x2560"
-  name     = "MyAndroid70"
-
+resource "genymotion_cloud" "device" {
   count = 3
+
+  template_uuid = "a0a9c90a-b391-42f4-b77b-ae0561d74bbe"
+  name     = "MyAndroid70-${count.index}"  
+}
+```
+
+### Example - Start one device with adb connection
+
+The following example shows you how to start 1 device and connect it with adb.
+* By default connected_with_adb is equal to true, so the paramater is optionnal
+* if you don"t want to connect the device with adb, set `connected_with_adb = false`
+
+```hcl
+# use env vars to configure the provider
+provider "genymotion" {}
+
+resource "genymotion_cloud" "device" {
+
+  template = "a0a9c90a-b391-42f4-b77b-ae0561d74bbe"
+  name     = "MyAndroid70"
+  connected_with_adb = true
+  
+}
+```
+
+### Example - Start one device with adb connection and specify an adb serial port
+
+The following example shows you how to start 1 device and connect it with adb specify an adb serial port ( e.g localhost:7090)
+
+```hcl
+# use env vars to configure the provider
+provider "genymotion" {}
+
+resource "genymotion_cloud" "device" {
+
+  template = "a0a9c90a-b391-42f4-b77b-ae0561d74bbe"
+  name     = "MyAndroid70"
+  adb_serial_port = "7090"
+  
 }
 ```
 
@@ -147,7 +188,7 @@ Initialize your Terraform project by passing in the directory that contains your
 
 ```sh
 $ terraform version
-Terraform v0.17.0
+Terraform v0.11.13
 
 $ terraform init --plugin-dir=$GOPATH/bin
 ```
@@ -158,7 +199,6 @@ Run acceptance tests
 ```sh
 $ export GENYMOTION_EMAIL={GENYMOTION_ACCOUNT}
 $ export GENYMOTION_PASSWORD={GENYMOTION_PASSWORD}
-$ export GENYMOTION_LICENSE_KEY={GENYMOTION_LICENSE_KEY}
 $ make testacc
 ```
 
@@ -168,6 +208,15 @@ Build and test
 ```sh
 $ export GENYMOTION_EMAIL={GENYMOTION_ACCOUNT}
 $ export GENYMOTION_PASSWORD={GENYMOTION_PASSWORD}
-$ export GENYMOTION_LICENSE_KEY={GENYMOTION_LICENSE_KEY}
 $ make
 ```
+
+## Release the provider
+
+```sh
+$ export GENYMOTION_EMAIL={GENYMOTION_ACCOUNT}
+$ export GENYMOTION_PASSWORD={GENYMOTION_PASSWORD}
+$ make all
+```
+
+Copy the generated binaries to github releases.
