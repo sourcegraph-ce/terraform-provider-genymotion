@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"os/exec"
+	"regexp"
+	"strings"
 
 	"github.com/hashicorp/go-multierror"
 	"github.com/hashicorp/terraform/helper/schema"
@@ -44,11 +46,6 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 		Password: d.Get("password").(string),
 	}
 
-	// Check mandatory fields
-	if err := config.validate(); err != nil {
-		return nil, err
-	}
-
 	// Connect to Genymotion account
 	if err := config.connect(); err != nil {
 		return nil, err
@@ -71,18 +68,38 @@ func (c GenymotionConfig) validate() error {
 }
 
 func (c GenymotionConfig) connect() error {
-	// Register Genymotion Account
-	log.Println("[INFO] Register Genymotion Account")
+	// Detect if user is already registered
 	cmd := exec.Command(
-		"gmsaas", "auth", "login", c.Email, c.Password)
-	output, err := cmd.CombinedOutput()
+		"gmsaas", "auth", "whoami")
+	out, err := cmd.CombinedOutput()
 	if err != nil {
-		return fmt.Errorf("Error: %s", output)
-	} else {
-		fmt.Println(string(output))
+		log.Fatalf("cmd.Run() failed with %s\n", err)
 	}
 
+	// if gmsaas who ami return an email, so the user is already registered, don't register him again
+	if !validateEmail(strings.Trim(string(out), "\n")) {
+		// Register Genymotion Account
+
+		// Check mandatory fields
+		if err := c.validate(); err != nil {
+			return err
+		}
+		log.Println("[INFO] Register Genymotion Account")
+		cmd := exec.Command(
+			"gmsaas", "auth", "login", c.Email, c.Password)
+		output, err := cmd.CombinedOutput()
+		if err != nil {
+			return fmt.Errorf("Error: %s", output)
+		}
+	} else {
+		log.Println("[INFO] User is already registered")
+	}
 	return nil
+}
+
+func validateEmail(email string) bool {
+	Re := regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`)
+	return Re.MatchString(email)
 }
 
 type GenymotionConfig struct {
