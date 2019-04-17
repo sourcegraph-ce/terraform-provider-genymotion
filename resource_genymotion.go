@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"os/exec"
-	"regexp"
 	"strings"
 
 	"github.com/hashicorp/terraform/helper/schema"
@@ -112,13 +111,9 @@ func resourceGenymotionDelete(d *schema.ResourceData, m interface{}) error {
 }
 
 func GetInstanceDetails(name string) (string, string) {
-
-	space := regexp.MustCompile(`\s+`)
-
 	for index, line := range GetInstancesList() {
 		if index >= 2 {
-			str := space.ReplaceAllString(line, " ")
-			s := strings.Split(str, " ")
+			s := strings.Split(line, "  ")
 			if strings.Compare(s[1], name) == 0 {
 				uuid := s[0]
 				serial := s[2]
