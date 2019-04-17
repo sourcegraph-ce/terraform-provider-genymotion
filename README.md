@@ -11,15 +11,15 @@ This is a custom terraform provider for managing Android devices within the Geny
 * [hashicorp/terraform](https://github.com/hashicorp/terraform)
 * [Go](https://golang.org/doc/install) 1.9 (to build the provider plugin)
 * [Genymotion Cloud Account](https://cloud.geny.io/)
-* [gmsaas] (**pip install gmsaas**)
+* [gmsaas](https://pypi.org/project/gmsaas/) (**pip3 install gmsaas**)
 * [Android SDK](https://developer.android.com/studio/index.html#downloads)
 
 
 ## gmsaas
 
-You must install gmsaas command line tool using `pip install gmsaas`
+You must install gmsaas command line tool using `pip install gmsaas`.
 
-You also must to configure android sdk path using `gmsaas config set android-sdk-path <PATH_TO_ANDROID_SDK>`
+You also must configure Android SDK path using `gmsaas config set android-sdk-path <PATH_TO_ANDROID_SDK>`.
 
 ## Installation
 
@@ -41,7 +41,7 @@ You also must to configure android sdk path using `gmsaas config set android-sdk
 
 ## Using the provider
 
-### Setup ###
+### Setup
 
 The provider takes configuration arguments for setting up your Genymotion Cloud account within Terraform. The following example shows you how to explicitly configure the provider using your account information.
 
@@ -49,7 +49,6 @@ The provider takes configuration arguments for setting up your Genymotion Cloud 
 provider "genymotion" {
   email = ""
   password  = ""
-
 }
 ```
 
@@ -69,7 +68,7 @@ provider "genymotion" {
 }  
 ```
 
-If you use environnement variables, just add the provider : 
+If you use environment variables, just add the provider: 
 ```hcl
 provider "genymotion' {}
 ```
@@ -132,11 +131,11 @@ resource "genymotion_cloud" "device" {
 }
 ```
 
-### Example - Start one device with adb connection
+### Example - Start one device with ADB connection
 
-The following example shows you how to start 1 device and connect it with adb.
-* By default connected_with_adb is equal to true, so the paramater is optionnal
-* if you don"t want to connect the device with adb, set `connected_with_adb = false`
+The following example shows you how to start one device and connect it to ADB.
+* By default connected_with_adb is equal to true, so the parameter is optional
+* if you don't want to connect the device with ADB, set `connected_with_adb = false`
 
 ```hcl
 # use env vars to configure the provider
@@ -151,9 +150,9 @@ resource "genymotion_cloud" "device" {
 }
 ```
 
-### Example - Start one device with adb connection and specify an adb serial port
+### Example - Start one device with ADB connection and specify an ADB serial port
 
-The following example shows you how to start 1 device and connect it with adb specify an adb serial port ( e.g localhost:7090)
+The following example shows you how to start one device and connect it with ADB on a specific port (e.g localhost:7090)
 
 ```hcl
 # use env vars to configure the provider
@@ -202,21 +201,12 @@ $ export GENYMOTION_PASSWORD={GENYMOTION_PASSWORD}
 $ make testacc
 ```
 
-or 
-
-Build and test 
-```sh
-$ export GENYMOTION_EMAIL={GENYMOTION_ACCOUNT}
-$ export GENYMOTION_PASSWORD={GENYMOTION_PASSWORD}
-$ make
-```
-
 ## Release the provider
 
 ```sh
 $ export GENYMOTION_EMAIL={GENYMOTION_ACCOUNT}
 $ export GENYMOTION_PASSWORD={GENYMOTION_PASSWORD}
-$ make all
+$ make
 ```
 
 Copy the generated binaries to github releases.

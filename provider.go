@@ -76,15 +76,13 @@ func (c GenymotionConfig) connect() error {
 		log.Fatalf("cmd.Run() failed with %s\n", err)
 	}
 
-	// if gmsaas who ami return an email, so the user is already registered, don't register him again
+	// If user is logged, do not login again
 	if !validateEmail(strings.Trim(string(out), "\n")) {
-		// Register Genymotion Account
-
 		// Check mandatory fields
 		if err := c.validate(); err != nil {
 			return err
 		}
-		log.Println("[INFO] Register Genymotion Account")
+		log.Println("[INFO] Login Genymotion Account")
 		cmd := exec.Command(
 			"gmsaas", "auth", "login", c.Email, c.Password)
 		output, err := cmd.CombinedOutput()
@@ -92,7 +90,7 @@ func (c GenymotionConfig) connect() error {
 			return fmt.Errorf("Error: %s", output)
 		}
 	} else {
-		log.Println("[INFO] User is already registered")
+		log.Println("[INFO] User is already logged")
 	}
 	return nil
 }
