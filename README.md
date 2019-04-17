@@ -17,7 +17,7 @@ This is a custom terraform provider for managing Android devices within the Geny
 
 ## gmsaas
 
-You must install gmsaas command line tool using `pip install gmsaas`.
+You must install gmsaas command line tool using `pip3 install gmsaas`.
 
 You also must configure Android SDK path using `gmsaas config set android-sdk-path <PATH_TO_ANDROID_SDK>`.
 
