@@ -86,7 +86,7 @@ provider "genymotion" {}
 
 
 resource "genymotion_cloud" "myAndroid70" {
-    template_uuid = "a0a9c90a-b391-42f4-b77b-ae0561d74bbe"
+    recipe_uuid = "a0a9c90a-b391-42f4-b77b-ae0561d74bbe"
     name     = "myAndroidDevice70"
 }
 ```
@@ -100,17 +100,17 @@ The following example shows you how to start several devices on Genymotion Cloud
 provider "genymotion" {}
 
 resource "genymotion_cloud" "Android70" {
-  template_uuid = "a0a9c90a-b391-42f4-b77b-ae0561d74bbe"
+  recipe_uuid = "a0a9c90a-b391-42f4-b77b-ae0561d74bbe"
   name     = "MyAndroid70"
 }
 
 resource "genymotion_cloud" "Android71" {
-  template_uuid = "80a67ae9-430c-4824-a386-befbb19518b9"
+  recipe_uuid = "80a67ae9-430c-4824-a386-befbb19518b9"
   name     = "MyAndroid71"
 }
 
 resource "genymotion_cloud" "Android80" {
-  template_uuid = "a59951f2-ed13-40f9-80b9-3ddceb3c89f5"
+  recipe_uuid = "a59951f2-ed13-40f9-80b9-3ddceb3c89f5"
   name     = "MyAndroid80"
 }
 ```
@@ -126,7 +126,7 @@ provider "genymotion" {}
 resource "genymotion_cloud" "device" {
   count = 3
 
-  template_uuid = "a0a9c90a-b391-42f4-b77b-ae0561d74bbe"
+  recipe_uuid = "a0a9c90a-b391-42f4-b77b-ae0561d74bbe"
   name     = "MyAndroid70-${count.index}"  
 }
 ```
@@ -134,8 +134,8 @@ resource "genymotion_cloud" "device" {
 ### Example - Start one device with ADB connection
 
 The following example shows you how to start one device and connect it to ADB.
-* By default connected_with_adb is equal to true, so the parameter is optional
-* if you don't want to connect the device with ADB, set `connected_with_adb = false`
+* By default adbconnect is equal to true, so the parameter is optional
+* if you don't want to connect the device with ADB, set `adbconnect = false`
 
 ```hcl
 # use env vars to configure the provider
@@ -145,7 +145,7 @@ resource "genymotion_cloud" "device" {
 
   template = "a0a9c90a-b391-42f4-b77b-ae0561d74bbe"
   name     = "MyAndroid70"
-  connected_with_adb = true
+  adbconnect = true
   
 }
 ```

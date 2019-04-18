@@ -14,7 +14,7 @@ import (
 func TestAccGenymotionCloudBasicCreate(t *testing.T) {
 
 	var nameBasic = fmt.Sprintf("instance-test-%s", acctest.RandString(10))
-	var templateUUIDBasic = "107d757e-463a-4a18-8667-b8dec6e4c87e"
+	var recipeUUIDBasic = "107d757e-463a-4a18-8667-b8dec6e4c87e"
 	var checkADB = false
 
 	resource.Test(t, resource.TestCase{
@@ -25,10 +25,10 @@ func TestAccGenymotionCloudBasicCreate(t *testing.T) {
 			resource.TestStep{
 				Config: testAccGenymotionCloudBasic(
 					nameBasic,
-					templateUUIDBasic,
+					recipeUUIDBasic,
 				),
 				Check: resource.ComposeTestCheckFunc(
-					testCheckGenymotionCloudInstanceExists("genymotion_cloud.device", nameBasic, templateUUIDBasic, checkADB),
+					testCheckGenymotionCloudInstanceExists("genymotion_cloud.device", nameBasic, recipeUUIDBasic, checkADB),
 				),
 			},
 		},
@@ -39,7 +39,7 @@ func TestAccGenymotionCloudBasicCreate(t *testing.T) {
 func TestAccGenymotionCloudBasicWithADBCreate(t *testing.T) {
 
 	var nameBasic = fmt.Sprintf("instance-test-%s", acctest.RandString(10))
-	var templateUUIDBasic = "107d757e-463a-4a18-8667-b8dec6e4c87e"
+	var recipeUUIDBasic = "107d757e-463a-4a18-8667-b8dec6e4c87e"
 	var checkADB = true
 
 	resource.Test(t, resource.TestCase{
@@ -50,17 +50,17 @@ func TestAccGenymotionCloudBasicWithADBCreate(t *testing.T) {
 			resource.TestStep{
 				Config: testAccGenymotionCloudWithADB(
 					nameBasic,
-					templateUUIDBasic,
+					recipeUUIDBasic,
 				),
 				Check: resource.ComposeTestCheckFunc(
-					testCheckGenymotionCloudInstanceExists("genymotion_cloud.device", nameBasic, templateUUIDBasic, checkADB),
+					testCheckGenymotionCloudInstanceExists("genymotion_cloud.device", nameBasic, recipeUUIDBasic, checkADB),
 				),
 			},
 		},
 	})
 }
 
-func testCheckGenymotionCloudInstanceExists(resourceName string, name string, templateUUID string, checkADB bool) resource.TestCheckFunc {
+func testCheckGenymotionCloudInstanceExists(resourceName string, name string, recipeUUID string, checkADB bool) resource.TestCheckFunc {
 
 	return func(state *terraform.State) error {
 
@@ -71,10 +71,10 @@ func testCheckGenymotionCloudInstanceExists(resourceName string, name string, te
 
 		outputs := state.RootModule().Outputs
 
-		if outputs["template_uuid"].Value != templateUUID {
+		if outputs["recipe_uuid"].Value != recipeUUID {
 			return fmt.Errorf(
-				`'template_uuid' output is %s; want '%s'`,
-				outputs["template_uuid"].Value, templateUUID,
+				`'recipe_uuid' output is %s; want '%s'`,
+				outputs["recipe_uuid"].Value, recipeUUID,
 			)
 		}
 
@@ -105,18 +105,18 @@ func testCheckGenymotionCloudInstanceExists(resourceName string, name string, te
 	}
 }
 
-func testAccGenymotionCloudBasic(name string, templateUUID string) string {
+func testAccGenymotionCloudBasic(name string, recipeUUID string) string {
 	return fmt.Sprintf(`
 		provider "genymotion" {}
 
 		resource "genymotion_cloud" "device" {
 			name		= "%s"
-			template_uuid	= "%s"
-			connected_with_adb = false
+			recipe_uuid	= "%s"
+			adbconnect = false
 		}
 		
-		output "template_uuid" {
-			value = "${genymotion_cloud.device.template_uuid}"
+		output "recipe_uuid" {
+			value = "${genymotion_cloud.device.recipe_uuid}"
 		}
 		output "name" {
 			value = "${genymotion_cloud.device.name}"
@@ -126,22 +126,22 @@ func testAccGenymotionCloudBasic(name string, templateUUID string) string {
 		}
 		output "instance_uuid" {
 			value = "${genymotion_cloud.device.instance_uuid}"
-		}`, name, templateUUID,
+		}`, name, recipeUUID,
 	)
 }
 
-func testAccGenymotionCloudWithADB(name string, templateUUID string) string {
+func testAccGenymotionCloudWithADB(name string, recipeUUID string) string {
 	return fmt.Sprintf(`
 		provider "genymotion" {}
 
 		resource "genymotion_cloud" "device" {
 			name		= "%s"
-			template_uuid	= "%s"
-			connected_with_adb = true
+			recipe_uuid	= "%s"
+			adbconnect = true
 		}
 		
-		output "template_uuid" {
-			value = "${genymotion_cloud.device.template_uuid}"
+		output "recipe_uuid" {
+			value = "${genymotion_cloud.device.recipe_uuid}"
 		}
 		output "name" {
 			value = "${genymotion_cloud.device.name}"
@@ -151,7 +151,7 @@ func testAccGenymotionCloudWithADB(name string, templateUUID string) string {
 		}
 		output "instance_uuid" {
 			value = "${genymotion_cloud.device.instance_uuid}"
-		}`, name, templateUUID,
+		}`, name, recipeUUID,
 	)
 }
 

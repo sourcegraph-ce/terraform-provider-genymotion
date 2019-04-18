@@ -16,7 +16,7 @@ func resourceGenymotion() *schema.Resource {
 		Delete: resourceGenymotionDelete,
 
 		Schema: map[string]*schema.Schema{
-			"template_uuid": &schema.Schema{
+			"recipe_uuid": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
@@ -35,7 +35,7 @@ func resourceGenymotion() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"connected_with_adb": &schema.Schema{
+			"adbconnect": &schema.Schema{
 				Type:     schema.TypeBool,
 				Optional: true,
 				Default:  true,
@@ -51,13 +51,13 @@ func resourceGenymotion() *schema.Resource {
 }
 
 func resourceGenymotionCreate(d *schema.ResourceData, m interface{}) error {
-	templateUUID := d.Get("template_uuid").(string)
+	recipeUUID := d.Get("recipe_uuid").(string)
 	name := d.Get("name").(string)
 	adbSerialPort := d.Get("adb_serial_port").(string)
-	connectedWithAdb := d.Get("connected_with_adb")
+	connectedWithAdb := d.Get("adbconnect")
 
 	// Start Genymotion Cloud Device
-	cmd := exec.Command("gmsaas", "instances", "start", templateUUID, name)
+	cmd := exec.Command("gmsaas", "instances", "start", recipeUUID, name)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("Error: %s", output)
