@@ -1,16 +1,14 @@
-provider "genymotion" {}
-
-variable "template" {
-  type    = "string"
-  default = "Google Nexus 6 - 7.0.0 - API 24 - 1440x2560"
+provider "genymotion" {
 }
 
-variable "name" {
+variable "recipe_uuid" {
   type    = "string"
-  default = "MyTestDevice"
+  default = "107d757e-463a-4a18-8667-b8dec6e4c87e"
 }
 
 resource "genymotion_cloud" "Android70" {
-  template = "${var.template}"
-  name     = "${var.name}"
+  recipe_uuid = "${var.recipe_uuid}"
+  name     = "DeviceConnectedWithAdb"
+  adbconnect = true
+  adb_serial_port = "7090"
 }

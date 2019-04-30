@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"os"
 	"os/exec"
 	"strings"
 
@@ -17,7 +16,7 @@ func resourceGenymotion() *schema.Resource {
 		Delete: resourceGenymotionDelete,
 
 		Schema: map[string]*schema.Schema{
-			"template": &schema.Schema{
+			"recipe_uuid": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
@@ -28,29 +27,57 @@ func resourceGenymotion() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
-			"uuid": &schema.Schema{
+			"instance_uuid": &schema.Schema{
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"adbserial": &schema.Schema{
+			"adb_serial": &schema.Schema{
 				Type:     schema.TypeString,
 				Computed: true,
+			},
+			"adbconnect": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  true,
+				ForceNew: true,
+			},
+			"adb_serial_port": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
 			},
 		},
 	}
 }
 
 func resourceGenymotionCreate(d *schema.ResourceData, m interface{}) error {
-	template := d.Get("template").(string)
+	recipeUUID := d.Get("recipe_uuid").(string)
 	name := d.Get("name").(string)
+	adbSerialPort := d.Get("adb_serial_port").(string)
+	connectedWithAdb := d.Get("adbconnect")
 
 	// Start Genymotion Cloud Device
-	cmd := exec.Command("gmtool", "admin", "--cloud", "startdisposable", template, name)
+	cmd := exec.Command("gmsaas", "instances", "start", recipeUUID, name)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("Error: %s", output)
-	} else {
-		fmt.Println(string(output))
+	}
+
+	// Connect to adb with adb-serial-port
+	if connectedWithAdb == true {
+		uuid, _ := GetInstanceDetails(name)
+		cmdArgs := []string{}
+		if len(adbSerialPort) > 0 {
+			cmdArgs = []string{"instances", "adbconnect", uuid, "--adb-serial-port", adbSerialPort}
+		} else {
+			cmdArgs = []string{"instances", "adbconnect", uuid}
+		}
+
+		cmd := exec.Command("gmsaas", cmdArgs...)
+		output, err := cmd.CombinedOutput()
+		if err != nil {
+			return fmt.Errorf("Error: %s", output)
+		}
 	}
 
 	id := d.Get("name").(string)
@@ -63,32 +90,9 @@ func resourceGenymotionRead(d *schema.ResourceData, m interface{}) error {
 
 	name := d.Get("name").(string)
 
-	// Retrieve genymotion Cloud device informations
-	adminList := exec.Command("gmtool", "--cloud", "admin", "list")
-	stdout, err := adminList.StdoutPipe()
-	if err != nil {
-		return nil
-	}
-	adminList.Start()
-	scanner := bufio.NewScanner(stdout)
-	for scanner.Scan() {
-		line := scanner.Text()
-		s := strings.Split(line, "|")
-		if len(s) >= 4 {
-			actualName := strings.Trim(s[3], " ")
-			if strings.EqualFold(actualName, name) {
-				uuid := strings.Trim(s[2], " ")
-				d.Set("uuid", uuid)
-
-				serial := strings.Trim(s[1], " ")
-				d.Set("adbserial", serial)
-			}
-		}
-	}
-
-	if err := scanner.Err(); err != nil {
-		fmt.Fprintln(os.Stderr, "reading standard input:", err)
-	}
+	uuid, serial := GetInstanceDetails(name)
+	d.Set("instance_uuid", uuid)
+	d.Set("adb_serial", serial)
 
 	return nil
 }
@@ -96,13 +100,42 @@ func resourceGenymotionRead(d *schema.ResourceData, m interface{}) error {
 func resourceGenymotionDelete(d *schema.ResourceData, m interface{}) error {
 	name := d.Get("name").(string)
 
+	uuid, _ := GetInstanceDetails(name)
 	// Stop Genymotion Cloud Device
-	cmd := exec.Command("gmtool", "admin", "--cloud", "stopdisposable", name)
+	cmd := exec.Command("gmsaas", "instances", "stop", uuid)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("Error: %s", output)
-	} else {
-		fmt.Println(string(output))
 	}
 	return nil
+}
+
+func GetInstanceDetails(name string) (string, string) {
+	for index, line := range GetInstancesList() {
+		if index >= 2 {
+			s := strings.Split(line, "  ")
+			if strings.Compare(s[1], name) == 0 {
+				uuid := s[0]
+				serial := s[2]
+				return uuid, serial
+			}
+		}
+	}
+	return "", ""
+}
+
+func GetInstancesList() []string {
+	adminList := exec.Command("gmsaas", "instances", "list")
+	stdout, _ := adminList.StdoutPipe()
+	adminList.Start()
+	// Create new Scanner.
+	scanner := bufio.NewScanner(stdout)
+	result := []string{}
+	// Use Scan.
+	for scanner.Scan() {
+		line := scanner.Text()
+		// Append line to result.
+		result = append(result, line)
+	}
+	return result
 }
