@@ -21,7 +21,7 @@ build: clean ## Builds the application.
 	$(GOBUILD) -o $(BINARY_NAME) -v
 
 testacc: clean build ## Run acceptance tests
-	TF_ACC=1 go test $(TEST) -v $(TESTARGS) -timeout 120m
+	TF_ACC=1 go test -v ./genymotion -timeout 120m
 
 release: clean build testacc ## Generate a release, but don't publish to GitHub.
 	$(GORELEASERCMD) --skip-validate --skip-publish
