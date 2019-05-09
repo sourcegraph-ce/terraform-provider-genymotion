@@ -3,6 +3,7 @@ package genymotion
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"os/exec"
 	"strings"
 
@@ -66,17 +67,18 @@ func resourceGenymotionCreate(d *schema.ResourceData, m interface{}) error {
 	// Connect to adb with adb-serial-port
 	if connectedWithAdb == true {
 		uuid, _ := GetInstanceDetails(name)
-		cmdArgs := []string{}
 		if len(adbSerialPort) > 0 {
-			cmdArgs = []string{"instances", "adbconnect", uuid, "--adb-serial-port", adbSerialPort}
+			cmd := exec.Command("gmsaas", "instances", "adbconnect", uuid, "--adb-serial-port", adbSerialPort)
+			output, err := cmd.CombinedOutput()
+			if err != nil {
+				return fmt.Errorf("Error: %s", output)
+			}
 		} else {
-			cmdArgs = []string{"instances", "adbconnect", uuid}
-		}
-
-		cmd := exec.Command("gmsaas", cmdArgs...)
-		output, err := cmd.CombinedOutput()
-		if err != nil {
-			return fmt.Errorf("Error: %s", output)
+			cmd := exec.Command("gmsaas", "instances", "adbconnect", uuid)
+			output, err := cmd.CombinedOutput()
+			if err != nil {
+				return fmt.Errorf("Error: %s", output)
+			}
 		}
 	}
 
@@ -127,7 +129,10 @@ func GetInstanceDetails(name string) (string, string) {
 func GetInstancesList() []string {
 	adminList := exec.Command("gmsaas", "instances", "list")
 	stdout, _ := adminList.StdoutPipe()
-	adminList.Start()
+	err := adminList.Start()
+	if err != nil {
+		log.Fatal(err)
+	}
 	// Create new Scanner.
 	scanner := bufio.NewScanner(stdout)
 	result := []string{}
