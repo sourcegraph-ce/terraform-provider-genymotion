@@ -14,14 +14,14 @@ import (
 func Provider() *schema.Provider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
-			"email": &schema.Schema{
+			"email": {
 				Type:        schema.TypeString,
 				Required:    true,
 				DefaultFunc: schema.EnvDefaultFunc("GENYMOTION_EMAIL", nil),
 				Description: "Email for the Genymotion Cloud account",
 			},
 
-			"password": &schema.Schema{
+			"password": {
 				Type:        schema.TypeString,
 				Required:    true,
 				DefaultFunc: schema.EnvDefaultFunc("GENYMOTION_PASSWORD", nil),

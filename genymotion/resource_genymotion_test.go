@@ -22,7 +22,7 @@ func TestAccGenymotionCloudBasicCreate(t *testing.T) {
 		Providers:    testAccProviders,
 		CheckDestroy: testCheckGenymotionCloudDestroy,
 		Steps: []resource.TestStep{
-			resource.TestStep{
+			{
 				Config: testAccGenymotionCloudBasic(
 					nameBasic,
 					recipeUUIDBasic,
@@ -47,7 +47,7 @@ func TestAccGenymotionCloudBasicWithADBCreate(t *testing.T) {
 		Providers:    testAccProviders,
 		CheckDestroy: testCheckGenymotionCloudDestroy,
 		Steps: []resource.TestStep{
-			resource.TestStep{
+			{
 				Config: testAccGenymotionCloudWithADB(
 					nameBasic,
 					recipeUUIDBasic,

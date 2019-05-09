@@ -16,32 +16,32 @@ func resourceGenymotion() *schema.Resource {
 		Delete: resourceGenymotionDelete,
 
 		Schema: map[string]*schema.Schema{
-			"recipe_uuid": &schema.Schema{
+			"recipe_uuid": {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
 			},
 
-			"name": &schema.Schema{
+			"name": {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
 			},
-			"instance_uuid": &schema.Schema{
+			"instance_uuid": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"adb_serial": &schema.Schema{
+			"adb_serial": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"adbconnect": &schema.Schema{
+			"adbconnect": {
 				Type:     schema.TypeBool,
 				Optional: true,
 				Default:  true,
 				ForceNew: true,
 			},
-			"adb_serial_port": &schema.Schema{
+			"adb_serial_port": {
 				Type:     schema.TypeString,
 				Optional: true,
 				ForceNew: true,
