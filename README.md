@@ -1,212 +1,72 @@
-# terraform-provider-genymotion
+Terraform Provider
+==================
 
-[Terraform](https://www.terraform.io) Custom Provider for [Genymotion Cloud SAAS](https://www.genymotion.com/cloud/)
+- Website: https://www.terraform.io
+- [![Gitter chat](https://badges.gitter.im/hashicorp-terraform/Lobby.png)](https://gitter.im/hashicorp-terraform/Lobby)
+- Mailing list: [Google Groups](http://groups.google.com/group/terraform-tool)
 
-## Description
+<img src="https://cdn.rawgit.com/hashicorp/terraform-website/master/content/source/assets/images/logo-hashicorp.svg" width="600px">
 
-This is a custom terraform provider for managing Android devices within the Genymotion Cloud SAAS platform.
+Requirements
+------------
 
-## Requirements
+- [Terraform](https://www.terraform.io/downloads.html) 0.10+
+- [Go](https://golang.org/doc/install) 1.12 (to build the provider plugin)
 
-* [hashicorp/terraform](https://github.com/hashicorp/terraform)
-* [Go](https://golang.org/doc/install) 1.9 (to build the provider plugin)
-* [Genymotion Cloud Account](https://cloud.geny.io/)
-* [gmsaas](https://pypi.org/project/gmsaas/) (**pip3 install gmsaas**)
-* [Android SDK](https://developer.android.com/studio/index.html#downloads)
+Developing the Provider
+---------------------
 
+If you wish to work on the provider, you'll first need [Go](http://www.golang.org) installed on your machine (please check the [requirements](https://github.com/terraform-providers/terraform-provider-genymotion#requirements) before proceeding).
 
-## gmsaas
+*Note:* This project uses [Go Modules](https://blog.golang.org/using-go-modules) making it safe to work with it outside of your existing [GOPATH](http://golang.org/doc/code.html#GOPATH). The instructions that follow assume a directory in your home directory outside of the standard GOPATH (i.e `$HOME/development/terraform-providers/`).
 
-You must install gmsaas command line tool using `pip3 install gmsaas`.
-
-You also must configure Android SDK path using `gmsaas config set android-sdk-path <PATH_TO_ANDROID_SDK>`.
-
-## Installation
-
-1. Download the appropriate release for your system: https://github.com/genymobile/terraform-provider-genymotion/releases
-
-1. Unzip/untar the archive.
-
-1. Move it into `$HOME/.terraform.d/plugins`:
-
-    ```sh
-    $ mkdir -p $HOME/.terraform.d/plugins
-    $ mv terraform-provider-genymotion $HOME/.terraform.d/plugins/terraform-provider-genymotion
-    ```
-
-1. After placing it into your plugins directory, run `terraform init` to initialize it.
-
-  This will find the plugin locally.
-
-
-## Using the provider
-
-### Setup
-
-The provider takes configuration arguments for setting up your Genymotion Cloud account within Terraform. The following example shows you how to explicitly configure the provider using your account information.
-
-```hcl
-provider "genymotion" {
-  email = ""
-  password  = ""
-}
-```
-
-The following arguments are supported.
-
-- `email` - (Required) This is the email of the Genymotion Cloud account. It can also be provided via the `GENYMOTION_EMAIL` environment variable.
-- `password` - (Required) This is the password of the Genymotion Cloud account. It can also be provided via the `GENYMOTION_PASSWORD` environment variable.
-
-### Example ###
-
-The following example shows you how to configure Genymotion Cloud provider.
-
-```hcl
-provider "genymotion" {
-    email = "name@company.com"
-    password = "its@wEsOme"
-}  
-```
-
-If you use environment variables, just add the provider: 
-```hcl
-provider "genymotion' {}
-```
-
-
-## Resources Providers ##
-
-### Example - One device ###
-
-The following example shows you how to start one device on Genymotion Cloud SAAS platform.
-
-```hcl
-# use env vars to configure the provider
-provider "genymotion" {}
-
-
-resource "genymotion_cloud" "myAndroid70" {
-    recipe_uuid = "a0a9c90a-b391-42f4-b77b-ae0561d74bbe"
-    name     = "myAndroidDevice70"
-}
-```
-
-### Example - Several devices ###
-
-The following example shows you how to start several devices on Genymotion Cloud SAAS platform.
-
-```hcl
-# use env vars to configure the provider
-provider "genymotion" {}
-
-resource "genymotion_cloud" "Android70" {
-  recipe_uuid = "a0a9c90a-b391-42f4-b77b-ae0561d74bbe"
-  name     = "MyAndroid70"
-}
-
-resource "genymotion_cloud" "Android71" {
-  recipe_uuid = "80a67ae9-430c-4824-a386-befbb19518b9"
-  name     = "MyAndroid71"
-}
-
-resource "genymotion_cloud" "Android80" {
-  recipe_uuid = "a59951f2-ed13-40f9-80b9-3ddceb3c89f5"
-  name     = "MyAndroid80"
-}
-```
-
-### Example - Start several devices based on the same template
-
-The following example shows you how to start 3 devices based on the same template.
-
-```hcl
-# use env vars to configure the provider
-provider "genymotion" {}
-
-resource "genymotion_cloud" "device" {
-  count = 3
-
-  recipe_uuid = "a0a9c90a-b391-42f4-b77b-ae0561d74bbe"
-  name     = "MyAndroid70-${count.index}"  
-}
-```
-
-### Example - Start one device with ADB connection
-
-The following example shows you how to start one device and connect it to ADB.
-* By default adbconnect is equal to true, so the parameter is optional
-* if you don't want to connect the device with ADB, set `adbconnect = false`
-
-```hcl
-# use env vars to configure the provider
-provider "genymotion" {}
-
-resource "genymotion_cloud" "device" {
-
-  template = "a0a9c90a-b391-42f4-b77b-ae0561d74bbe"
-  name     = "MyAndroid70"
-  adbconnect = true
-  
-}
-```
-
-### Example - Start one device with ADB connection and specify an ADB serial port
-
-The following example shows you how to start one device and connect it with ADB on a specific port (e.g localhost:7090)
-
-```hcl
-# use env vars to configure the provider
-provider "genymotion" {}
-
-resource "genymotion_cloud" "device" {
-
-  template = "a0a9c90a-b391-42f4-b77b-ae0561d74bbe"
-  name     = "MyAndroid70"
-  adb_serial_port = "7090"
-  
-}
-```
-
-## Building The Provider
-
-Clone repository to: `$GOPATH/src/github.com/terraform-providers/terraform-provider-genymotion`
+Clone repository to: `$HOME/development/terraform-providers/`
 
 ```sh
-$ mkdir -p $GOPATH/src/github.com/terraform-providers; cd $GOPATH/src/github.com/terraform-providers
-$ git clone git@github.com:Genymobile/terraform-provider-genymotion
+$ mkdir -p $HOME/development/terraform-providers/; cd $HOME/development/terraform-providers/
+$ git clone git@github.com:terraform-providers/terraform-provider-genymotion
+...
 ```
 
-Enter the provider directory and build the provider
+Enter the provider directory and run `make tools`. This will install the needed tools for the provider.
 
 ```sh
-$ cd $GOPATH/src/github.com/terraform-providers/terraform-provider-genymotion
+$ make tools
+```
+
+To compile the provider, run `make build`. This will build the provider and put the provider binary in the `$GOPATH/bin` directory.
+
+```sh
 $ make build
+...
+$ $GOPATH/bin/terraform-provider-genymotion
+...
 ```
 
-Initialize your Terraform project by passing in the directory that contains your custom built provider binary, `terraform-provider-genymotion`. This is typically `$GOPATH/bin`.
+Using the Provider
+----------------------
+
+To use a released provider in your Terraform environment, run [`terraform init`](https://www.terraform.io/docs/commands/init.html) and Terraform will automatically install the provider. To specify a particular provider version when installing released providers, see the [Terraform documentation on provider versioning](https://www.terraform.io/docs/configuration/providers.html#version-provider-versions).
+
+To instead use a custom-built provider in your Terraform environment (e.g. the provider binary from the build instructions above), follow the instructions to [install it as a plugin.](https://www.terraform.io/docs/plugins/basics.html#installing-a-plugin) After placing it into your plugins directory,  run `terraform init` to initialize it.
+
+For either installation method, documentation about the provider specific configuration options can be found on the [provider's website](https://www.terraform.io/docs/providers/genymotion/index.html).
+
+Testing the Provider
+---------------------------
+
+In order to run the full suite of Acceptance tests, run `make testacc`.
+
+*Note:* Acceptance tests create real resources, and often cost money to run. Please read [Running an Acceptance Test](https://github.com/terraform-providers/terraform-provider-genymotion/blob/master/.github/CONTRIBUTING.md#running-an-acceptance-test) in the contribution guidelines for more information on usage.
 
 ```sh
-$ terraform version
-Terraform v0.11.13
-
-$ terraform init --plugin-dir=$GOPATH/bin
-```
-
-## Test the provider
-
-Run acceptance tests
-```sh
-$ export GENYMOTION_EMAIL={GENYMOTION_ACCOUNT}
-$ export GENYMOTION_PASSWORD={GENYMOTION_PASSWORD}
 $ make testacc
 ```
 
-## Release the provider
+Contributing
+---------------------------
 
-```sh
-$ export GENYMOTION_EMAIL={GENYMOTION_ACCOUNT}
-$ export GENYMOTION_PASSWORD={GENYMOTION_PASSWORD}
-$ make
-```
+Terraform is the work of thousands of contributors. We appreciate your help!
 
-Copy the generated binaries to github releases.
+Issues on GitHub are intended to be related to bugs or feature requests with provider codebase. See https://www.terraform.io/docs/extend/community/index.html for a list of community resources to ask questions about Terraform.
+
