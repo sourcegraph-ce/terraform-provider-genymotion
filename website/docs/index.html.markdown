@@ -3,28 +3,28 @@ layout: "genymotion"
 page_title: "Provider: genymotion"
 sidebar_current: "docs-genymotion-index"
 description: |-
-  The Genymotion provider is used to interact with many resources supported by Genymotion Cloud SaaS. The provider needs to be configured with the proper credentials before it can be used.
+  Genymotion Cloud Provider is used to interact with many resources supported by Genymotion Cloud SaaS. The provider needs to be configured with the proper credentials before it can be used.
 ---
 
-# Genymotion Provider
+# Genymotion Cloud Provider
 
-The Genymotion provider is used to interact with the
-many resources supported by [Genymotion Cloud SaaS](https://cloud.geny.io). The provider needs to be configured
-with the proper credentials before it can be used.
+Genymotion Cloud provider is used to interact with the resource supported by [Genymotion Cloud SaaS](https://cloud.geny.io?&utm_source=web-referral&utm_medium=docs&utm_campaign=terraform&utm_content=signup). It will start Genymotion Cloud Android virtual devices that can directly be connected to adb to seamlessly run and scale your automated tests on them. The provider needs to be configured with the proper credentials before it can be used.
 
-The Genymotion provider needs gmsaas binary installed. You can easly install it: 
+Genymotion Cloud provider needs gmsaas binary to be installed. You can easily install it with [Python3](https://www.python.org/downloads/)
+
 ```shell
 # Install gmsaas binary
 pip3 install gmsaas
 ````
 
 You also must configure Android SDK path :
+
 ```shell
 # Configure Android SDK path
 gmsaas config set android-sdk-path <PATH_TO_ANDROID_SDK>
 ````
 
-Use the navigation to the left to read about the available resources.
+Use the navigation to the left to read about the available resource.
 
 ## Example Usage
 
@@ -35,8 +35,8 @@ provider "genymotion" {
   password = "${var.password}"
 }
 
-# Create a android instance
-resource "genymotion_cloud_instance" "Android90" {
+# Create an Genymotion Cloud SaaS Android instance
+resource "genymotion_cloud" "Android90" {
   recipe_uuid = "143eb44a-1d3a-4f27-bcac-3c40124e2836"
   name     = "Android90"
 }
@@ -44,13 +44,13 @@ resource "genymotion_cloud_instance" "Android90" {
 
 ## Authentication
 
-The Genymotion provider offers a flexible means of providing credentials for authentication.
+Genymotion Cloud provider accepts several ways to enter credentials for authentication.
 The following methods are supported, in this order, and explained below:
 
 - Static credentials
 - Environment variables
 
-### Static credentials ###
+### Static credentials
 
 Static credentials can be provided by adding an `email` and `password`  in-line in the
 genymotion provider block:
@@ -63,7 +63,6 @@ provider "genymotion" {
   password = "${var.password}"
 }
 ```
-
 
 ### Environment variables
 
@@ -82,17 +81,15 @@ $ export GENYMOTION_PASSWORD="your_genymotion_saas_password"
 $ terraform plan
 ```
 
-
 ## Argument Reference
 
 The following arguments are supported:
 
-* `email` - (Optional) This is the Genymotion Cloud SaaS email account. It must be provided, but
+- `email` - This is the Genymotion Cloud SaaS email account. It must be provided, but
   it can also be sourced from the `GENYMOTION_EMAIL` environment variable.
 
-* `password` - (Optional) This is the Genymotion Cloud SaaS password account. It must be provided, but
+- `password` - This is the Genymotion Cloud SaaS password account. It must be provided, but
   it can also be sourced from the `GENYMOTION_PASSWORD` environment variable.
-
 
 ## Testing
 
