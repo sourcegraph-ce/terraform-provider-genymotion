@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/genymobile/terraform-provider-genymotion/genymotion"
 	"github.com/hashicorp/terraform/plugin"
 	"github.com/hashicorp/terraform/terraform"
+	"github.com/terraform-providers/terraform-provider-genymotion/genymotion"
 )
 
 func main() {
