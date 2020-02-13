@@ -93,8 +93,12 @@ func resourceGenymotionRead(d *schema.ResourceData, m interface{}) error {
 	name := d.Get("name").(string)
 
 	uuid, serial := GetInstanceDetails(name)
-	d.Set("instance_uuid", uuid)
-	d.Set("adb_serial", serial)
+	if err := d.Set("instance_uuid", uuid); err != nil {
+		return fmt.Errorf("Set instance_uuid failed, error: %s", err)
+	}
+	if err := d.Set("adb_serial", serial); err != nil {
+		return fmt.Errorf("set adb_serial failed, error: %s", err)
+	}
 
 	return nil
 }
