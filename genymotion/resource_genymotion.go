@@ -3,7 +3,7 @@ package genymotion
 import (
 	"bufio"
 	"fmt"
-	"log"
+	log "github.com/sourcegraph-ce/logrus"
 	"os"
 	"os/exec"
 	"strings"
