@@ -2,7 +2,7 @@ package genymotion
 
 import (
 	"fmt"
-	"log"
+	log "github.com/sourcegraph-ce/logrus"
 	"os/exec"
 	"regexp"
 	"strings"
